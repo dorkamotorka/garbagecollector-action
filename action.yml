@@ -1,0 +1,23 @@
+name: Garbage collector 
+author: tp4348
+description: GitHub Action for removing unused files to reduce the size of the output artifact
+inputs:
+  rootfs:
+    description: 'Tip of the file system to parse through filter' # GITHUB_WORKSPACE
+    required: true
+  files:
+    description: 'File pattern to delete'
+    required: false
+  directories:
+    description: 'Directory pattern to delete'
+    required: false
+outputs:
+  size:
+    description: 'Size reduction ratio'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.rootfs }}
+    - ${{ inputs.files }}
+    - ${{ inputs.directories }}

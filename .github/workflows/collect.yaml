@@ -1,0 +1,7 @@
+name: Garbage collect filesystem
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tp4348/garbagecollector-action@main

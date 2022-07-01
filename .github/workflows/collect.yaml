@@ -1,7 +1,24 @@
 name: Garbage collect filesystem
-on: [push]
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tp4348/garbagecollector-action@main
+      - name: Checkout Main repository
+        uses: actions/checkout@v3
+      - name: Setup python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Garbage collect
+        env:
+          FILES: '[test-file.txt, .png]'
+          DIRECTORIES: '[test-directory]'
+        run: python main.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+           name: demo-artifact
+           path: . 

@@ -3,7 +3,7 @@ import stat
 import shutil
 import subprocess
 
-extensions = ["*.txt", "*.md", "*.jpg", "*.jpeg", "*.png"]
+extensions = [".txt", ".md", ".jpg", ".jpeg", ".png"]
 
 # remove directory with read-only files
 def rmdir_readonly(func, path, _):
@@ -16,13 +16,20 @@ def get_size(path):
 def main():
     files = directories = []
     try:
-        files = os.environ["INPUT_FILES"][1:-1]
-        files = files.split(",")
-        ext = [f.strip() for f in files if (f.strip() in extensions)]
-        directories = os.environ["INPUT_DIRECTORIES"]
+        files = os.environ["FILES"][1:-1]
+        files = [f.strip() for f in files.split(',')]
+        ext = [f for f in files if (f in extensions)]
+        for f in files:
+            if f in ext:
+                files.remove(f)
     except:
-        print("No input defined, nothing will be removed")
-    
+        print("No files on input.")
+
+    try:
+        directories = os.environ["DIRECTORIES"][1:-1]
+    except:
+        print("No directories on input.")
+
     cwd = os.getcwd()
     init_size = get_size(cwd)
 
@@ -31,14 +38,16 @@ def main():
         for d in dirs:
             if d in directories:
                 shutil.rmtree(d, onerror=rmdir_readonly)
+                print(f"Removing directory {d}")
         for f in fs:
             if f in files or f.endswith(tuple(ext)):
                 os.remove(f)
+                print(f"Removing file {f}")
 
     final_size = get_size(cwd)
     size_ratio = 1 - final_size/init_size
 
-    print(f"::set-output name=size::{size_ratio}")
+    print(f"Output image size reduced for {size_ratio}")
 
 
 if __name__ == '__main__':
